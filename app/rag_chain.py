@@ -1,5 +1,5 @@
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatGoogleGenerativeAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from app.vectorstore import load_vectorstore
 
