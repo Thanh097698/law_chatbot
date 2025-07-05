@@ -1,5 +1,5 @@
 import os
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings 
 from app.config import FAISS_PATH
 
