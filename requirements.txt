@@ -1,8 +1,9 @@
 fastapi
 uvicorn
 python-dotenv
-langchain
+langchain>=0.1.14
 faiss-cpu
 pypdf
 google-generativeai
 langchain-google-genai
+langchain-community>=0.0.20
