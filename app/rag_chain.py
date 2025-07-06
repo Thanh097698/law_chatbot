@@ -51,5 +51,6 @@ def build_qa_chain():
 def generate_answer(question: str) -> str:
     """Trả lời câu hỏi bằng hệ thống RAG."""
     qa_chain = build_qa_chain()
-    result = qa_chain.run(question)
-    return result
+    response = qa_chain.invoke({"query": question})
+    return response["result"]
+
