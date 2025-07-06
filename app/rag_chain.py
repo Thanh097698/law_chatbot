@@ -48,9 +48,19 @@ def build_qa_chain():
     )
 
 
-def generate_answer(question: str) -> str:
-    """Trả lời câu hỏi bằng hệ thống RAG."""
+def generate_answer(question: str) -> dict:
+    """Trả về câu trả lời, các context và metadata từ hệ thống RAG."""
     qa_chain = build_qa_chain()
     response = qa_chain.invoke({"query": question})
-    return response["result"]
 
+    answer = response["result"]
+    source_documents = response.get("source_documents", [])
+
+    contexts = [doc.page_content for doc in source_documents]
+    metadata = [doc.metadata for doc in source_documents]
+
+    return {
+        "answer": answer,
+        "contexts": contexts,
+        "metadata": metadata
+    }
