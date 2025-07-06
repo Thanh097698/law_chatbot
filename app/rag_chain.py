@@ -28,8 +28,8 @@ def get_retriever(k: int = 3):
 def get_llm():
     """Khởi tạo mô hình Gemini Flash."""
     return ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash-latest",
-        temperature=0.2
+        model="gemini-2.0-flash",
+        temperature=0.5
     )
 
 

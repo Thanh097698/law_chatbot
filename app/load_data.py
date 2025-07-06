@@ -22,7 +22,7 @@ def load_documents(file_paths: list) -> list:
     return documents
 
 
-def split_documents(documents: list, chunk_size=1000, chunk_overlap=150) -> list:
+def split_documents(documents: list, chunk_size=5000, chunk_overlap=150) -> list:
     """Chia nhỏ tài liệu thành các chunk."""
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
