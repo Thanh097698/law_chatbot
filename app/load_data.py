@@ -1,6 +1,7 @@
 import os
+import re
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.vectorstores import FAISS
 from app.config import FAISS_PATH
@@ -22,13 +23,22 @@ def load_documents(file_paths: list) -> list:
     return documents
 
 
-def split_documents(documents: list, chunk_size=5000, chunk_overlap=150) -> list:
-    """Chia nhỏ tài liệu thành các chunk."""
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
-    )
-    return text_splitter.split_documents(documents)
+def split_by_chapter(documents: list) -> list:
+    """Chia tài liệu theo các chương (Chương I, Chương II, ...)."""
+    all_chunks = []
+
+    for doc in documents:
+        # Tách văn bản theo các chương
+        splits = re.split(r'(Chương\s+[^\n]+)', doc.page_content)
+
+        for i in range(1, len(splits), 2):
+            title = splits[i].strip()
+            content = splits[i + 1].strip() if i + 1 < len(splits) else ""
+            full_text = f"{title}\n{content}"
+
+            all_chunks.append(Document(page_content=full_text, metadata=doc.metadata))
+
+    return all_chunks
 
 
 def create_and_save_faiss_index(chunks: list, faiss_path: str):
@@ -40,7 +50,7 @@ def create_and_save_faiss_index(chunks: list, faiss_path: str):
 
 
 def load_and_index_pdf(data_dir="law_data"):
-    """Pipeline chính: load PDF, chunk, tạo index và lưu."""
+    """Pipeline chính: load PDF, chia theo chương, tạo index và lưu."""
     print(f"Scanning folder: {data_dir}")
     pdf_files = get_pdf_files(data_dir)
 
@@ -49,7 +59,7 @@ def load_and_index_pdf(data_dir="law_data"):
         return
 
     documents = load_documents(pdf_files)
-    chunks = split_documents(documents)
-    print(f"Created {len(chunks)} chunks from {len(pdf_files)} files.")
+    chunks = split_by_chapter(documents)
+    print(f"Created {len(chunks)} chương từ {len(pdf_files)} file PDF.")
 
     create_and_save_faiss_index(chunks, FAISS_PATH)
