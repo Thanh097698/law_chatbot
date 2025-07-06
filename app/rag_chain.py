@@ -29,7 +29,7 @@ def get_llm():
     """Khởi tạo mô hình Gemini Flash từ Google."""
     return ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
-        temperature=0.7
+        temperature=0.5
     )
 
 
@@ -44,19 +44,29 @@ def build_qa_chain():
         retriever=retriever,
         chain_type="stuff",
         chain_type_kwargs={"prompt": prompt},
-        return_source_documents=False  
+        return_source_documents=True
     )
 
 
-def generate_answer(question: str) -> str:
-    """Trả về chỉ phần câu trả lời từ hệ thống."""
+def generate_answer(question: str) -> dict:
+    """Sinh câu trả lời từ câu hỏi, trả về kèm context và metadata."""
     qa_chain = build_qa_chain()
     response = qa_chain.invoke({"query": question})
-    return response["result"].strip()
+
+    answer = response["result"]
+    source_documents = response.get("source_documents", [])
+
+    contexts = [doc.page_content for doc in source_documents]
+    metadata = [doc.metadata for doc in source_documents]
+
+    return {
+        "answer": answer,
+        "contexts": contexts,
+        "metadata": metadata
+    }
 
 
-def print_answer(answer: str):
-    """In câu trả lời đơn giản."""
+def print_answer(result: dict):
     print("\nCâu trả lời:")
-    print("---------------")
-    print(answer)
+    print("--------------")
+    print(result["answer"].strip())
