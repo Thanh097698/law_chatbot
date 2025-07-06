@@ -59,14 +59,4 @@ def generate_answer(question: str) -> dict:
     contexts = [doc.page_content for doc in source_documents]
     metadata = [doc.metadata for doc in source_documents]
 
-    return {
-        "answer": answer,
-        "contexts": contexts,
-        "metadata": metadata
-    }
-
-
-def print_answer(result: dict):
-    print("\nCâu trả lời:")
-    print("--------------")
-    print(result["answer"].strip())
+    return answer
